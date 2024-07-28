@@ -9,17 +9,33 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_community.utilities import SQLDatabase as sqlchain
 from pydantic import BaseModel
 from pymongo import MongoClient
+import openai
+from fastapi.middleware.cors import CORSMiddleware
 #from langchain_community.utilities import SQLDatabase
 
+
+openai.api_key = "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"
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 #db = SQLDatabase.from_uri("sqlite:///Chinook.db")
-db = sqlchain.from_uri("mssql+pyodbc://sa:ABC1238f47!@104.254.247.128:1435/Universidad?driver=ODBC+Driver+17+for+SQL+Server")
+db = sqlchain.from_uri("mssql+pyodbc://sa:ABC1238f47!@104.254.247.128:1436/Universidad?driver=ODBC+Driver+17+for+SQL+Server")
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 tools = toolkit.get_tools()
 
 
 app = FastAPI()
+
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 MONGO_DETAILS = "mongodb://root:*%25h5MY2Wg_@104.254.247.128:27017/chat?authSource=admin"
 # Cadena de conexión a tu instancia de MongoDB
@@ -156,6 +172,7 @@ def read_item( conversation: str,  pregunta: Union[str, None] = None):
     for s in agent_executor.stream(
         {"messages": [HumanMessage(content=pregunta)]}
     ):
+        print(s)
         tools_messages = s.get('tools', {}).get('messages', [])
         respuesta = ""
         agent_messages = s.get('agent', {}).get('messages', [])
