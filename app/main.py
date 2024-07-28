@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 #from langchain_community.utilities import SQLDatabase
 
 
-openai.api_key = "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"
+
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 #db = SQLDatabase.from_uri("sqlite:///Chinook.db")
